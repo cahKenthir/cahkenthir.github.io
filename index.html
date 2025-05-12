@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IME AI STUDIO</title>
+    <title>IME AI STUDIO - AI Image Generator</title>
     <style>
         :root {
             --navy: #0a192f;
@@ -122,6 +122,31 @@
             box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
         }
 
+        .ratio-buttons {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .ratio-btn {
+            flex: 1;
+            background: rgba(10, 25, 47, 0.5);
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            color: var(--white);
+            padding: 0.7rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .ratio-btn.active {
+            background: rgba(100, 255, 218, 0.2);
+            border-color: var(--teal);
+            color: var(--teal);
+        }
+
         .btn {
             background: linear-gradient(to right, var(--teal), #52d4b9);
             color: var(--navy);
@@ -209,17 +234,13 @@
 
         .image-container {
             position: relative;
-            padding-top: 100%;
             background: rgba(0, 0, 0, 0.2);
         }
 
         .image-container img {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            display: block;
         }
 
         .image-info {
@@ -306,6 +327,10 @@
             .logo {
                 font-size: 2.2rem;
             }
+
+            .ratio-buttons {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -322,6 +347,15 @@
                 <textarea id="prompt" placeholder="A majestic lion in the savannah at sunset, ultra-detailed, HDR..."></textarea>
             </div>
 
+            <div class="input-group">
+                <label>Image Aspect Ratio</label>
+                <div class="ratio-buttons">
+                    <button class="ratio-btn active" data-ratio="1:1">Square (1:1)</button>
+                    <button class="ratio-btn" data-ratio="9:16">Portrait (9:16)</button>
+                    <button class="ratio-btn" data-ratio="16:9">Landscape (16:9)</button>
+                </div>
+            </div>
+
             <div class="controls">
                 <div class="input-group">
                     <label for="model">AI Model</label>
@@ -334,12 +368,12 @@
 
                 <div class="input-group">
                     <label for="width">Width (512-1024px)</label>
-                    <input type="number" id="width" min="512" max="1024" value="768">
+                    <input type="number" id="width" min="512" max="1024" value="768" readonly>
                 </div>
 
                 <div class="input-group">
                     <label for="height">Height (512-1024px)</label>
-                    <input type="number" id="height" min="512" max="1024" value="768">
+                    <input type="number" id="height" min="512" max="1024" value="768" readonly>
                 </div>
 
                 <div class="input-group">
@@ -357,36 +391,3 @@
         </div>
 
         <div id="gallery" class="gallery">
-            <div class="empty-state">
-                <h3>Your creative gallery is empty</h3>
-                <p>Describe your vision and generate your first masterpiece</p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const promptInput = document.getElementById('prompt');
-            const modelSelect = document.getElementById('model');
-            const widthInput = document.getElementById('width');
-            const heightInput = document.getElementById('height');
-            const stepsInput = document.getElementById('steps');
-            const generateBtn = document.getElementById('generate-btn');
-            const generateText = document.getElementById('generate-text');
-            const starsContainer = document.getElementById('stars');
-            const gallery = document.getElementById('gallery');
-            const errorMessage = document.getElementById('error-message');
-
-            // Check for saved images in localStorage
-            const savedImages = JSON.parse(localStorage.getItem('imeAiImages')) || [];
-            if (savedImages.length > 0) {
-                renderGallery(savedImages);
-            }
-
-            generateBtn.addEventListener('click', generateImage);
-
-            function createStars() {
-                starsContainer.innerHTML = '';
-                starsContainer.style.display = 'block';
-                
-                const</html>
