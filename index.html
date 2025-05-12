@@ -3,29 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Image Generator</title>
+    <title>IME AI STUDIO</title>
     <style>
         :root {
-            --primary: #6e45e2;
-            --secondary: #88d3ce;
-            --dark: #1a1a2e;
-            --light: #f8f9fa;
-            --error: #ff6b6b;
-            --success: #51cf66;
+            --navy: #0a192f;
+            --navy-light: #172a45;
+            --teal: #64ffda;
+            --white: #e6f1ff;
+            --gray: #8892b0;
+            --error: #ff5555;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Calibre', 'Inter', 'San Francisco', 'SF Pro Text', -apple-system, system-ui, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--navy), var(--navy-light));
             min-height: 100vh;
             padding: 2rem;
-            color: var(--light);
+            color: var(--white);
+            line-height: 1.6;
         }
 
         .container {
@@ -35,85 +36,98 @@
 
         header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
         }
 
-        h1 {
-            font-size: 2.5rem;
+        .logo {
+            font-size: 2.8rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(to right, var(--teal), var(--white));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -1px;
         }
 
-        .subtitle {
+        .tagline {
             font-size: 1.1rem;
-            opacity: 0.9;
+            color: var(--teal);
+            margin-bottom: 1rem;
         }
 
         .generator-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(10, 25, 47, 0.7);
             border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            margin-bottom: 2rem;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 3rem;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            backdrop-filter: blur(10px);
         }
 
         .input-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.8rem;
         }
 
         label {
             display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+            color: var(--teal);
+            font-size: 1rem;
         }
 
         textarea {
             width: 100%;
-            padding: 1rem;
+            padding: 1.2rem;
             border-radius: 8px;
-            border: none;
-            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            background: rgba(10, 25, 47, 0.8);
             font-size: 1rem;
+            color: var(--white);
             resize: vertical;
-            min-height: 120px;
+            min-height: 140px;
             transition: all 0.3s ease;
         }
 
         textarea:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgba(110, 69, 226, 0.3);
-            background: white;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
         }
 
         .controls {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.8rem;
+            margin-bottom: 2rem;
         }
 
         select, input {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.9rem;
             border-radius: 8px;
-            border: none;
-            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            background: rgba(10, 25, 47, 0.8);
             font-size: 1rem;
+            color: var(--white);
+            transition: all 0.3s ease;
         }
 
         select:focus, input:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgba(110, 69, 226, 0.3);
-            background: white;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
         }
 
         .btn {
-            background: var(--primary);
-            color: white;
+            background: linear-gradient(to right, var(--teal), #52d4b9);
+            color: var(--navy);
             border: none;
-            padding: 1rem 2rem;
-            font-size: 1rem;
+            padding: 1.2rem 2.5rem;
+            font-size: 1.1rem;
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
@@ -122,12 +136,14 @@
             align-items: center;
             justify-content: center;
             width: 100%;
+            box-shadow: 0 4px 15px rgba(100, 255, 218, 0.3);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn:hover {
-            background: #5d38c7;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(100, 255, 218, 0.4);
         }
 
         .btn:active {
@@ -135,49 +151,66 @@
         }
 
         .btn:disabled {
-            background: #aaa;
+            background: var(--gray);
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            display: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
             border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
+            animation: twinkle 1s infinite alternate;
+            opacity: 0;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @keyframes twinkle {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
         }
 
         .image-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(10, 25, 47, 0.7);
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(100, 255, 218, 0.1);
         }
 
         .image-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
         }
 
         .image-container {
             position: relative;
             padding-top: 100%;
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .image-container img {
@@ -190,71 +223,88 @@
         }
 
         .image-info {
-            padding: 1rem;
+            padding: 1.5rem;
         }
 
         .image-prompt {
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            color: var(--white);
         }
 
         .image-specs {
             display: flex;
             justify-content: space-between;
-            font-size: 0.8rem;
-            opacity: 0.7;
+            font-size: 0.85rem;
+            color: var(--gray);
         }
 
         .download-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
+            background: transparent;
+            color: var(--teal);
+            border: 1px solid var(--teal);
+            padding: 0.6rem 1.2rem;
             border-radius: 5px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
         }
 
         .download-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(100, 255, 218, 0.1);
         }
 
         .error-message {
             color: var(--error);
-            background: rgba(255, 107, 107, 0.1);
-            padding: 1rem;
+            background: rgba(255, 85, 85, 0.1);
+            padding: 1.2rem;
             border-radius: 8px;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             display: none;
+            border: 1px solid var(--error);
         }
 
         .empty-state {
             text-align: center;
-            padding: 3rem;
-            background: rgba(255, 255, 255, 0.1);
+            padding: 4rem;
+            background: rgba(10, 25, 47, 0.5);
             border-radius: 10px;
             margin-top: 2rem;
+            grid-column: 1 / -1;
+            border: 1px dashed rgba(100, 255, 218, 0.3);
+        }
+
+        .empty-state h3 {
+            color: var(--teal);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--gray);
         }
 
         @media (max-width: 768px) {
             body {
-                padding: 1rem;
+                padding: 1.5rem;
             }
             
             .controls {
                 grid-template-columns: 1fr;
             }
             
-            .gallery {
-                grid-template-columns: 1fr;
+            .generator-container {
+                padding: 1.5rem;
+            }
+            
+            .logo {
+                font-size: 2.2rem;
             }
         }
     </style>
@@ -262,43 +312,44 @@
 <body>
     <div class="container">
         <header>
-            <h1>AI Image Generator</h1>
-            <p class="subtitle">Create stunning images with AI models</p>
+            <div class="logo">IME AI STUDIO</div>
+            <div class="tagline">Transform your imagination into stunning visuals</div>
         </header>
 
         <div class="generator-container">
             <div class="input-group">
-                <label for="prompt">Image Prompt</label>
-                <textarea id="prompt" placeholder="Describe the image you want to generate..."></textarea>
+                <label for="prompt">Describe your vision</label>
+                <textarea id="prompt" placeholder="A majestic lion in the savannah at sunset, ultra-detailed, HDR..."></textarea>
             </div>
 
             <div class="controls">
                 <div class="input-group">
                     <label for="model">AI Model</label>
                     <select id="model">
-                        <option value="stable-diffusion">Stable Diffusion</option>
-                        <option value="dall-e">DALL-E</option>
-                        <option value="flux">FLUX</option>
+                        <option value="stable-diffusion">Stable Diffusion (HDR+)</option>
+                        <option value="dall-e">DALL-E (Ultra HD)</option>
+                        <option value="flux">FLUX (High Detail)</option>
                     </select>
                 </div>
 
                 <div class="input-group">
-                    <label for="width">Width (512-1024)</label>
-                    <input type="number" id="width" min="512" max="1024" value="512">
+                    <label for="width">Width (512-1024px)</label>
+                    <input type="number" id="width" min="512" max="1024" value="768">
                 </div>
 
                 <div class="input-group">
-                    <label for="height">Height (512-1024)</label>
-                    <input type="number" id="height" min="512" max="1024" value="512">
+                    <label for="height">Height (512-1024px)</label>
+                    <input type="number" id="height" min="512" max="1024" value="768">
                 </div>
 
                 <div class="input-group">
-                    <label for="steps">Steps (20-100)</label>
-                    <input type="number" id="steps" min="20" max="100" value="50">
+                    <label for="steps">Detail Steps (20-100)</label>
+                    <input type="number" id="steps" min="20" max="100" value="70">
                 </div>
             </div>
 
             <button id="generate-btn" class="btn">
+                <div id="stars" class="stars"></div>
                 <span id="generate-text">Generate Image</span>
             </button>
 
@@ -307,8 +358,8 @@
 
         <div id="gallery" class="gallery">
             <div class="empty-state">
-                <h3>No images generated yet</h3>
-                <p>Enter a prompt and click "Generate Image" to create your first AI artwork</p>
+                <h3>Your creative gallery is empty</h3>
+                <p>Describe your vision and generate your first masterpiece</p>
             </div>
         </div>
     </div>
@@ -322,170 +373,20 @@
             const stepsInput = document.getElementById('steps');
             const generateBtn = document.getElementById('generate-btn');
             const generateText = document.getElementById('generate-text');
+            const starsContainer = document.getElementById('stars');
             const gallery = document.getElementById('gallery');
             const errorMessage = document.getElementById('error-message');
 
             // Check for saved images in localStorage
-            const savedImages = JSON.parse(localStorage.getItem('aiImages')) || [];
+            const savedImages = JSON.parse(localStorage.getItem('imeAiImages')) || [];
             if (savedImages.length > 0) {
                 renderGallery(savedImages);
             }
 
             generateBtn.addEventListener('click', generateImage);
 
-            async function generateImage() {
-                const prompt = promptInput.value.trim();
-                const model = modelSelect.value;
-                const width = widthInput.value;
-                const height = heightInput.value;
-                const steps = stepsInput.value;
-
-                // Validate inputs
-                if (!prompt) {
-                    showError('Please enter a prompt');
-                    return;
-                }
-
-                if (width < 512 || width > 1024 || height < 512 || height > 1024) {
-                    showError('Width and height must be between 512 and 1024');
-                    return;
-                }
-
-                if (steps < 20 || steps > 100) {
-                    showError('Steps must be between 20 and 100');
-                    return;
-                }
-
-                // Clear any previous errors
-                hideError();
-
-                // Show loading state
-                generateBtn.disabled = true;
-                generateText.innerHTML = '<span class="loading"></span> Generating...';
-
-                try {
-                    // Construct the API URL
-                    const baseUrl = 'https://image.pollinations.ai/prompt';
-                    const promptParam = `${model}:${encodeURIComponent(prompt)}`;
-                    const params = new URLSearchParams({
-                        width,
-                        height,
-                        steps
-                    });
-
-                    const apiUrl = `${baseUrl}/${promptParam}?${params}`;
-
-                    // Fetch the image
-                    const response = await fetch(apiUrl);
-                    
-                    if (!response.ok) {
-                        throw new Error(`API request failed with status ${response.status}`);
-                    }
-
-                    // Get the image blob
-                    const blob = await response.blob();
-                    const imageUrl = URL.createObjectURL(blob);
-
-                    // Create image object to save
-                    const imageData = {
-                        id: Date.now(),
-                        prompt,
-                        model,
-                        width,
-                        height,
-                        steps,
-                        imageUrl,
-                        timestamp: new Date().toISOString()
-                    };
-
-                    // Save to localStorage
-                    const images = JSON.parse(localStorage.getItem('aiImages')) || [];
-                    images.unshift(imageData);
-                    localStorage.setItem('aiImages', JSON.stringify(images));
-
-                    // Render the new image
-                    renderGallery(images);
-                } catch (error) {
-                    console.error('Error generating image:', error);
-                    showError('Failed to generate image. Please try again.');
-                } finally {
-                    // Reset button state
-                    generateBtn.disabled = false;
-                    generateText.textContent = 'Generate Image';
-                }
-            }
-
-            function renderGallery(images) {
-                if (images.length === 0) {
-                    gallery.innerHTML = `
-                        <div class="empty-state">
-                            <h3>No images generated yet</h3>
-                            <p>Enter a prompt and click "Generate Image" to create your first AI artwork</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                gallery.innerHTML = images.map(image => `
-                    <div class="image-card">
-                        <div class="image-container">
-                            <img src="${image.imageUrl}" alt="${image.prompt}">
-                        </div>
-                        <div class="image-info">
-                            <p class="image-prompt" title="${image.prompt}">${image.prompt}</p>
-                            <div class="image-specs">
-                                <span>${image.model} • ${image.width}x${image.height}</span>
-                                <button class="download-btn" data-id="${image.id}">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                    Download
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-
-                // Add event listeners to download buttons
-                document.querySelectorAll('.download-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const imageId = btn.getAttribute('data-id');
-                        downloadImage(imageId);
-                    });
-                });
-            }
-
-            function downloadImage(imageId) {
-                const images = JSON.parse(localStorage.getItem('aiImages')) || [];
-                const image = images.find(img => img.id.toString() === imageId);
+            function createStars() {
+                starsContainer.innerHTML = '';
+                starsContainer.style.display = 'block';
                 
-                if (!image) return;
-
-                fetch(image.imageUrl)
-                    .then(response => response.blob())
-                    .then(blob => {
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `ai-image-${imageId}.png`;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                    });
-            }
-
-            function showError(message) {
-                errorMessage.textContent = message;
-                errorMessage.style.display = 'block';
-            }
-
-            function hideError() {
-                errorMessage.style.display = 'none';
-            }
-        });
-    </script>
-</body>
-</html>
+                const</html>
