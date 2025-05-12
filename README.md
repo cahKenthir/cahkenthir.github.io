@@ -1,2 +1,3 @@
 # cahkenthir.github.io
 Memecahkan masalah dalam masalah tanpa masalah
+# Clone repository git clone https://github.com/username/username.github.io.git # Masuk ke direktori cd username.github.io # Copy file HTML ke direktori cp /path/ke/index.html . # Commit dan push git add . git commit -m "Add AI image generator" git push origin main
