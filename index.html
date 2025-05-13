@@ -1,815 +1,336 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IME AI STUDIO</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-            padding: 20px;
-        }
-        
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            color: white;
-            padding: 30px;
-            position: relative;
-        }
-        
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
-        .user-profile {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        .content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 30px;
-        }
-        
-        .menu-card {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            padding: 25px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .menu-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .menu-card h2 {
-            color: #4a4a4a;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 10px;
-        }
-        
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #f5f5f5;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .menu-item:last-child {
-            border-bottom: none;
-        }
-        
-        .menu-item:hover {
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            padding-left: 10px;
-        }
-        
-        .menu-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            color: white;
-            font-weight: bold;
-        }
-        
-        .menu-text {
-            flex: 1;
-        }
-        
-        .menu-text h3 {
-            font-size: 1.1rem;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        
-        .menu-text p {
-            font-size: 0.9rem;
-            color: #777;
-        }
-        
-        .partners {
-            padding: 20px 30px;
-            background-color: #f9f9f9;
-            border-top: 1px solid #eee;
-        }
-        
-        .partners h3 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #555;
-        }
-        
-        .partner-logos {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 30px;
-        }
-        
-        .partner-logo {
-            height: 30px;
-            opacity: 0.7;
-            transition: opacity 0.3s ease;
-        }
-        
-        .partner-logo:hover {
-            opacity: 1;
-        }
-        
-        .stats {
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 0 0 15px 15px;
-        }
-        
-        .stats h3 {
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-        
-        .progress-bar {
-            height: 10px;
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            margin: 15px auto;
-            max-width: 300px;
-            overflow: hidden;
-        }
-        
-        .progress {
-            height: 100%;
-            width: 58%;
-            background-color: white;
-            border-radius: 5px;
-            transition: width 1s ease;
-        }
-        
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #777;
-        }
-        
-        .modal h2 {
-            margin-bottom: 20px;
-            color: #6e8efb;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        
-        .form-group input, 
-        .form-group textarea, 
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-        
-        .form-group textarea {
-            height: 120px;
-            resize: vertical;
-        }
-        
-        .submit-btn {
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: transform 0.2s ease;
-        }
-        
-        .submit-btn:hover {
-            transform: translateY(-2px);
-        }
-        
-        /* Image preview */
-        .image-preview {
-            width: 100%;
-            max-height: 200px;
-            object-fit: contain;
-            margin: 15px 0;
-            display: none;
-            border-radius: 5px;
-        }
-        
-        /* Loading animation */
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 20px 0;
-        }
-        
-        .loading-spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top: 4px solid #6e8efb;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Results section */
-        .results {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            display: none;
-        }
-        
-        .generated-image {
-            max-width: 100%;
-            border-radius: 5px;
-            margin-top: 15px;
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .content {
-                grid-template-columns: 1fr;
-            }
-            
-            .partner-logos {
-                flex-direction: column;
-                gap: 15px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IME AI STUDIO</title>
+  <style>
+    :root {
+      --primary: #5f5df4;
+      --bg-light: #f0f4f8;
+      --bg-dark: #121212;
+      --text-light: #fff;
+      --text-dark: #111;
+      --card-bg: #ffffff;
+      --transition: 0.3s ease-in-out;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      transition: var(--transition);
+    }
+
+    body.dark {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+    }
+
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+    }
+
+    .menu {
+      display: flex;
+      justify-content: space-around;
+      padding: 1rem;
+      background: #fff;
+      border-radius: 15px;
+      margin: 1rem auto;
+      max-width: 960px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    .menu button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .menu button:hover {
+      background: #3e3ccc;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: auto;
+      padding: 1rem;
+    }
+
+    textarea, select, button {
+      width: 100%;
+      margin-bottom: 1rem;
+      padding: 0.7rem;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .image-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .image-card img {
+      width: 100%;
+      display: block;
+    }
+
+    .image-card .actions {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .image-card .actions button {
+      background: rgba(255,255,255,0.8);
+      border: none;
+      padding: 5px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .loader {
+      margin: 1rem auto;
+      border: 4px solid #eee;
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    .toggle {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .toggle button {
+      background: var(--primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .history-item {
+      padding: 0.5rem;
+      background: #f7f7f7;
+      margin: 0.3rem 0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .error {
+      color: red;
+      margin-bottom: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.9rem;
+      color: gray;
+    }
+  </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <div class="header">
-            <h1>Hello, IME AI STUDIO!</h1>
-            <p>Your creative AI tools platform</p>
-            <div class="user-profile" onclick="toggleUserMenu()">👤</div>
-        </div>
-        
-        <div class="content">
-            <div class="menu-card">
-                <h2>AI Generation Tools</h2>
-                <div class="menu-item" onclick="openModal('image-generator')">
-                    <div class="menu-icon">1</div>
-                    <div class="menu-text">
-                        <h3>Generator Gambar AI</h3>
-                        <p>Buat gambar unik dengan kecerdasan buatan</p>
-                    </div>
-                </div>
-                <div class="menu-item" onclick="openModal('image-to-prompt')">
-                    <div class="menu-icon">2</div>
-                    <div class="menu-text">
-                        <h3>Image to Prompt</h3>
-                        <p>Hasilkan prompt dari gambar yang Anda unggah</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="menu-card">
-                <h2>AI Services</h2>
-                <div class="menu-item" onclick="openModal('ai-consultation')">
-                    <div class="menu-icon">3</div>
-                    <div class="menu-text">
-                        <h3>Konsultasi Masalah AI</h3>
-                        <p>Layanan boot untuk solusi AI Anda</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="menu-card">
-                <h2>Other Functions</h2>
-                <div class="menu-item" onclick="openModal('smart-scan')">
-                    <div class="menu-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M12 8V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M8 12H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <div class="menu-text">
-                        <h3>Smart Scan</h3>
-                        <p>Analisis kebutuhan AI Anda</p>
-                    </div>
-                </div>
-                <div class="menu-item" onclick="openModal('saved-projects')">
-                    <div class="menu-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M19 21L12 16L5 21V5C5 4.46957 5.21071 3.96086 5.58579 3.58579C5.96086 3.21071 6.46957 3 7 3H17C17.5304 3 18.0391 3.21071 18.4142 3.58579C18.7893 3.96086 19 4.46957 19 5V21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <div class="menu-text">
-                        <h3>Saved Projects</h3>
-                        <p>Akses proyek Anda yang tersimpan</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="partners">
-            <h3>Didukung oleh teknologi terbaik:</h3>
-            <div class="partner-logos">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/OpenAI_Logo.svg/1280px-OpenAI_Logo.svg.png" alt="OpenAI" class="partner-logo" style="height: 25px;">
-                <img src="https://flux.ai/images/flux-logo.svg" alt="Flux" class="partner-logo">
-                <img src="https://stability.ai/sites/default/files/2021-12/stable-diffusion-logo.png" alt="Stable Diffusion" class="partner-logo" style="height: 25px;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1280px-React-icon.svg.png" alt="React" class="partner-logo" style="height: 25px;">
-            </div>
-        </div>
-        
-        <div class="stats">
-            <h3>SYSTEM PERFORMANCE</h3>
-            <div class="progress-bar">
-                <div class="progress"></div>
-            </div>
-            <p>CURRENT/PROMY 58%</p>
-        </div>
+  <header>
+    <h1>IME AI STUDIO</h1>
+    <p>Powered by OpenAI, FLUX, Stable Diffusion</p>
+  </header>
+
+  <div class="menu">
+    <button onclick="switchMode('generator')">🎨 Generator Gambar AI</button>
+    <button onclick="switchMode('prompt')">🖼️ Image to Prompt</button>
+    <button onclick="switchMode('boot')">🤖 Konsultasi Masalah AI</button>
+  </div>
+
+  <div class="container">
+    <div id="controls">
+      <textarea id="prompt" rows="3" placeholder="Tulis prompt gambar di sini..."></textarea>
+      <select id="model">
+        <option value="Stable Diffusion">Stable Diffusion</option>
+        <option value="DALL-E">DALL-E</option>
+        <option value="FLUX">FLUX</option>
+      </select>
+      <select id="style">
+        <option value="realistic">Realistic</option>
+        <option value="anime">Anime</option>
+        <option value="painting">Painting</option>
+      </select>
+      <select id="ratio">
+        <option value="1:1">1:1</option>
+        <option value="9:16">9:16</option>
+        <option value="16:9">16:9</option>
+      </select>
+      <button onclick="generateImage()">🚀 Generate</button>
+      <div id="loader" class="loader" style="display: none;"></div>
+      <div id="error" class="error"></div>
     </div>
 
-    <!-- Modal for Image Generator -->
-    <div id="image-generator-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('image-generator-modal')">&times;</span>
-            <h2>Generator Gambar AI</h2>
-            <p>Buat gambar unik dengan kecerdasan buatan</p>
-            
-            <div class="form-group">
-                <label for="image-prompt">Deskripsi Gambar:</label>
-                <textarea id="image-prompt" placeholder="Masukkan deskripsi detail gambar yang ingin Anda buat..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="image-style">Gaya Seni:</label>
-                <select id="image-style">
-                    <option value="realistic">Realistis</option>
-                    <option value="anime">Anime</option>
-                    <option value="painting">Lukisan</option>
-                    <option value="digital-art">Digital Art</option>
-                    <option value="3d-render">3D Render</option>
-                </select>
-            </div>
-            
-            <button class="submit-btn" onclick="generateImage()">Generate Gambar</button>
-            
-            <div class="loading" id="image-generator-loading">
-                <div class="loading-spinner"></div>
-                <p>Sedang membuat gambar Anda...</p>
-            </div>
-            
-            <div class="results" id="image-generator-results">
-                <h3>Hasil Generasi Gambar:</h3>
-                <img id="generated-image" class="generated-image" src="" alt="Generated Image">
-                <button class="submit-btn" style="margin-top: 15px;" onclick="downloadImage()">Download Gambar</button>
-            </div>
-        </div>
-    </div>
+    <div id="imageGrid" class="grid"></div>
 
-    <!-- Modal for Image to Prompt -->
-    <div id="image-to-prompt-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('image-to-prompt-modal')">&times;</span>
-            <h2>Image to Prompt</h2>
-            <p>Unggah gambar untuk menghasilkan prompt AI</p>
-            
-            <div class="form-group">
-                <label for="image-upload">Unggah Gambar:</label>
-                <input type="file" id="image-upload" accept="image/*">
-                <img id="uploaded-image-preview" class="image-preview" src="" alt="Uploaded Image Preview">
-            </div>
-            
-            <div class="form-group">
-                <label for="prompt-detail">Detail Tambahan (opsional):</label>
-                <textarea id="prompt-detail" placeholder="Tambahkan detail tentang apa yang ingin Anda tekankan dalam prompt..."></textarea>
-            </div>
-            
-            <button class="submit-btn" onclick="generatePrompt()">Generate Prompt</button>
-            
-            <div class="loading" id="prompt-generator-loading">
-                <div class="loading-spinner"></div>
-                <p>Sedang menganalisis gambar Anda...</p>
-            </div>
-            
-            <div class="results" id="prompt-generator-results">
-                <h3>Prompt yang Dihasilkan:</h3>
-                <textarea id="generated-prompt" readonly style="width: 100%; height: 150px; padding: 10px;"></textarea>
-                <button class="submit-btn" style="margin-top: 15px;" onclick="copyPrompt()">Salin Prompt</button>
-            </div>
-        </div>
-    </div>
+    <h3>Riwayat Prompt</h3>
+    <div id="history"></div>
 
-    <!-- Modal for AI Consultation -->
-    <div id="ai-consultation-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('ai-consultation-modal')">&times;</span>
-            <h2>Konsultasi Masalah AI</h2>
-            <p>Jadwalkan sesi konsultasi dengan ahli AI kami</p>
-            
-            <div class="form-group">
-                <label for="consultation-name">Nama Lengkap:</label>
-                <input type="text" id="consultation-name" placeholder="Masukkan nama Anda">
-            </div>
-            
-            <div class="form-group">
-                <label for="consultation-email">Email:</label>
-                <input type="email" id="consultation-email" placeholder="Masukkan email Anda">
-            </div>
-            
-            <div class="form-group">
-                <label for="consultation-issue">Jenis Masalah:</label>
-                <select id="consultation-issue">
-                    <option value="model-selection">Pemilihan Model AI</option>
-                    <option value="implementation">Implementasi AI</option>
-                    <option value="optimization">Optimasi Model</option>
-                    <option value="data-processing">Pengolahan Data</option>
-                    <option value="other">Lainnya</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="consultation-details">Detail Masalah:</label>
-                <textarea id="consultation-details" placeholder="Jelaskan masalah atau kebutuhan Anda secara detail..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="consultation-date">Tanggal Konsultasi:</label>
-                <input type="date" id="consultation-date">
-            </div>
-            
-            <button class="submit-btn" onclick="submitConsultation()">Ajukan Konsultasi</button>
-            
-            <div class="loading" id="consultation-loading">
-                <div class="loading-spinner"></div>
-                <p>Mengirim permintaan konsultasi...</p>
-            </div>
-            
-            <div class="results" id="consultation-results">
-                <h3>Permintaan Konsultasi Terkirim!</h3>
-                <p>Tim kami akan menghubungi Anda segera untuk mengkonfirmasi jadwal.</p>
-            </div>
-        </div>
+    <div class="toggle">
+      <button onclick="toggleDarkMode()">🌗 Dark/Light Mode</button>
     </div>
+  </div>
 
-    <!-- Modal for Smart Scan -->
-    <div id="smart-scan-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('smart-scan-modal')">&times;</span>
-            <h2>Smart Scan</h2>
-            <p>Analisis kebutuhan AI Anda</p>
-            
-            <div class="form-group">
-                <label>Pilih area yang ingin dipindai:</label>
-                <div style="margin-top: 10px;">
-                    <label style="display: block; margin-bottom: 10px;">
-                        <input type="checkbox" name="scan-areas" value="data" checked> Ketersediaan Data
-                    </label>
-                    <label style="display: block; margin-bottom: 10px;">
-                        <input type="checkbox" name="scan-areas" value="infrastructure" checked> Infrastruktur Teknologi
-                    </label>
-                    <label style="display: block; margin-bottom: 10px;">
-                        <input type="checkbox" name="scan-areas" value="business-goals" checked> Tujuan Bisnis
-                    </label>
-                    <label style="display: block; margin-bottom: 10px;">
-                        <input type="checkbox" name="scan-areas" value="team-skills" checked> Keterampilan Tim
-                    </label>
-                </div>
-            </div>
-            
-            <button class="submit-btn" onclick="startSmartScan()">Mulai Smart Scan</button>
-            
-            <div class="loading" id="smart-scan-loading">
-                <div class="loading-spinner"></div>
-                <p>Sedang menganalisis sistem Anda...</p>
-            </div>
-            
-            <div class="results" id="smart-scan-results">
-                <h3>Hasil Smart Scan:</h3>
-                <div id="scan-results-details" style="margin-top: 15px;"></div>
-                <button class="submit-btn" style="margin-top: 15px;" onclick="saveScanResults()">Simpan Hasil</button>
-            </div>
-        </div>
-    </div>
+  <footer>
+    &copy; 2025 IME AI STUDIO — Dibuat dengan ❤️ dan AI
+  </footer>
 
-    <!-- Modal for Saved Projects -->
-    <div id="saved-projects-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('saved-projects-modal')">&times;</span>
-            <h2>Saved Projects</h2>
-            <p>Proyek-proyek yang telah Anda simpan</p>
-            
-            <div id="projects-list" style="margin-top: 20px;">
-                <!-- Projects will be loaded here -->
-                <div style="text-align: center; padding: 30px; color: #777;">
-                    <p>Anda belum memiliki proyek yang disimpan</p>
-                </div>
-            </div>
-            
-            <button class="submit-btn" style="margin-top: 20px;" onclick="createNewProject()">Buat Proyek Baru</button>
-        </div>
-    </div>
+  <script>
+    const loader = document.getElementById('loader');
+    const grid = document.getElementById('imageGrid');
+    const errorDiv = document.getElementById('error');
+    const promptInput = document.getElementById('prompt');
+    const historyEl = document.getElementById('history');
 
-    <script>
-        // Modal functions
-        function openModal(modalType) {
-            document.getElementById(modalType + '-modal').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-        
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            if (event.target.className === 'modal') {
-                event.target.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        }
-        
-        // Image Generator functions
-        function generateImage() {
-            const prompt = document.getElementById('image-prompt').value;
-            const style = document.getElementById('image-style').value;
-            
-            if (!prompt) {
-                alert('Silakan masukkan deskripsi gambar terlebih dahulu');
-                return;
-            }
-            
-            document.getElementById('image-generator-loading').style.display = 'block';
-            document.getElementById('image-generator-results').style.display = 'none';
-            
-            // Simulate API call
-            setTimeout(() => {
-                document.getElementById('image-generator-loading').style.display = 'none';
-                document.getElementById('image-generator-results').style.display = 'block';
-                
-                // This would be replaced with actual generated image from API
-                document.getElementById('generated-image').src = 'https://via.placeholder.com/512x512.png?text=Generated+AI+Image';
-            }, 3000);
-        }
-        
-        function downloadImage() {
-            const link = document.createElement('a');
-            link.href = document.getElementById('generated-image').src;
-            link.download = 'ai-generated-image.png';
-            link.click();
-        }
-        
-        // Image to Prompt functions
-        document.getElementById('image-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const preview = document.getElementById('uploaded-image-preview');
-                    preview.src = event.target.result;
-                    preview.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
-            }
+    function switchMode(mode) {
+      alert('Mode "' + mode + '" belum tersedia. Fokus pada Generator Gambar AI untuk sekarang.');
+    }
+
+    function getSize(ratio) {
+      switch(ratio) {
+        case '1:1': return [512, 512];
+        case '9:16': return [512, 912];
+        case '16:9': return [912, 512];
+        default: return [512, 512];
+      }
+    }
+
+    function generateImage() {
+      const prompt = promptInput.value.trim();
+      const model = document.getElementById('model').value;
+      const style = document.getElementById('style').value;
+      const ratio = document.getElementById('ratio').value;
+
+      if (!prompt) {
+        alert("Prompt tidak boleh kosong!");
+        return;
+      }
+
+      const styledPrompt = `${prompt}, ${style} style, by ${model}`;
+      const [width, height] = getSize(ratio);
+      const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(styledPrompt)}?width=${width}&height=${height}&steps=50`;
+
+      loader.style.display = 'block';
+      errorDiv.textContent = '';
+
+      fetch(url)
+        .then(res => {
+          if (!res.ok) throw new Error('Gagal menghasilkan gambar.');
+          return res.blob();
+        })
+        .then(blob => {
+          const imageURL = URL.createObjectURL(blob);
+          const card = document.createElement('div');
+          card.className = 'image-card';
+
+          const img = document.createElement('img');
+          img.src = imageURL;
+
+          const actions = document.createElement('div');
+          actions.className = 'actions';
+
+          const downloadBtn = document.createElement('button');
+          downloadBtn.textContent = '⬇️';
+          downloadBtn.onclick = () => {
+            const a = document.createElement('a');
+            a.href = imageURL;
+            a.download = 'ime-ai-image.png';
+            a.click();
+          };
+
+          const shareBtn = document.createElement('button');
+          shareBtn.textContent = '🔗';
+          shareBtn.onclick = () => {
+            window.open(`https://twitter.com/intent/tweet?text=Generated+Image:+${encodeURIComponent(prompt)}`, '_blank');
+          };
+
+          actions.appendChild(downloadBtn);
+          actions.appendChild(shareBtn);
+          card.appendChild(img);
+          card.appendChild(actions);
+          grid.prepend(card);
+
+          saveHistory(prompt);
+        })
+        .catch(err => {
+          errorDiv.textContent = err.message;
+        })
+        .finally(() => {
+          loader.style.display = 'none';
         });
-        
-        function generatePrompt() {
-            const fileInput = document.getElementById('image-upload');
-            const details = document.getElementById('prompt-detail').value;
-            
-            if (!fileInput.files[0]) {
-                alert('Silakan unggah gambar terlebih dahulu');
-                return;
-            }
-            
-            document.getElementById('prompt-generator-loading').style.display = 'block';
-            document.getElementById('prompt-generator-results').style.display = 'none';
-            
-            // Simulate API call
-            setTimeout(() => {
-                document.getElementById('prompt-generator-loading').style.display = 'none';
-                document.getElementById('prompt-generator-results').style.display = 'block';
-                
-                // This would be replaced with actual prompt from API
-                document.getElementById('generated-prompt').value = `Sebuah gambar ${details ? 'dengan ' + details + ' ' : ''}yang menampilkan elemen visual dari gambar yang diunggah. Warna dominan, komposisi, dan gaya visual dapat digunakan untuk membuat prompt yang lebih rinci.`;
-            }, 2500);
-        }
-        
-        function copyPrompt() {
-            const promptText = document.getElementById('generated-prompt');
-            promptText.select();
-            document.execCommand('copy');
-            alert('Prompt berhasil disalin!');
-        }
-        
-        // AI Consultation functions
-        function submitConsultation() {
-            const name = document.getElementById('consultation-name').value;
-            const email = document.getElementById('consultation-email').value;
-            const issue = document.getElementById('consultation-issue').value;
-            const details = document.getElementById('consultation-details').value;
-            const date = document.getElementById('consultation-date').value;
-            
-            if (!name || !email || !details || !date) {
-                alert('Silakan lengkapi semua field yang diperlukan');
-                return;
-            }
-            
-            document.getElementById('consultation-loading').style.display = 'block';
-            
-            // Simulate API call
-            setTimeout(() => {
-                document.getElementById('consultation-loading').style.display = 'none';
-                document.getElementById('consultation-results').style.display = 'block';
-                
-                // Reset form
-                document.getElementById('consultation-name').value = '';
-                document.getElementById('consultation-email').value = '';
-                document.getElementById('consultation-details').value = '';
-                document.getElementById('consultation-date').value = '';
-            }, 2000);
-        }
-        
-        // Smart Scan functions
-        function startSmartScan() {
-            const checkboxes = document.querySelectorAll('input[name="scan-areas"]:checked');
-            if (checkboxes.length === 0) {
-                alert('Silakan pilih setidaknya satu area untuk dipindai');
-                return;
-            }
-            
-            document.getElementById('smart-scan-loading').style.display = 'block';
-            document.getElementById('smart-scan-results').style.display = 'none';
-            
-            // Simulate scanning process
-            setTimeout(() => {
-                document.getElementById('smart-scan-loading').style.display = 'none';
-                document.getElementById('smart-scan-results').style.display = 'block';
-                
-                // Generate fake scan results
-                const areas = Array.from(checkboxes).map(cb => cb.value);
-                let resultsHTML = '<ul style="list-style-type: none; padding-left: 0;">';
-                
-                if (areas.includes('data')) {
-                    resultsHTML += `
-                        <li style="margin-bottom: 15px; padding: 15px; background-color: #f0f0f0; border-radius: 5px;">
-                            <strong>Ketersediaan Data:</strong>
-                            <p style="margin-top: 5px;">Sistem mendeteksi potensi sumber data yang dapat digunakan untuk pelatihan model AI.</p>
-                            <p style="color: #6e8efb; margin-top: 5px;">Rekomendasi: Lakukan audit data lebih mendalam untuk mengevaluasi kualitas dan kuantitas data.</p>
-                        </li>
-                    `;
-                }
-                
-                if (areas.includes('infrastructure')) {
-                    resultsHTML += `
-                        <li style="margin-bottom: 15px; padding: 15px; background-color: #f0f0f0; border-radius: 5px;">
-                            <strong>Infrastruktur Teknologi:</strong>
-                            <p style="margin-top: 5px;">Perangkat keras dan lunak saat ini mungkin memerlukan peningkatan untuk mendukung implementasi AI.</p>
-                            <p style="color: #6e8efb; margin-top: 5px;">Rekomendasi: Pertimbangkan solusi cloud untuk komputasi yang lebih skalabel.</p>
-                        </li>
-                    `;
-                }
-                
-                if (areas.includes('business-goals')) {
-                    resultsHTML += `
-                        <li style="margin-bottom: 15px; padding: 15px; background-color: #f0f0f0; border-radius: 5px;">
-                            <strong>Tujuan Bisnis:</strong>
-                            <p style="margin-top: 5px;">AI dapat membantu mencapai beberapa tujuan bisnis yang teridentifikasi.</p>
-                            <p style="color: #6e8efb; margin-top: 5px;">Rekomendasi: Fokus pada 1-2 use case dengan ROI tertinggi untuk implementasi awal.</p>
-                        </li>
-                    `;
-                }
-                
-                if (areas.includes('team-skills')) {
-                    resultsHTML += `
-                        <li style="margin-bottom: 15px; padding: 15px; background-color: #f0f0f0; border-radius: 5px;">
-                            <strong>Keterampilan Tim:</strong>
-                            <p style="margin-top: 5px;">Tim mungkin memerlukan pelatihan tambahan untuk mengelola solusi AI.</p>
-                            <p style="color: #6e8efb; margin-top: 5px;">Rekomendasi: Pertimbangkan program pelatihan atau hiring spesialis AI.</p>
-                        </li>
-                    `;
-                }
-                
-                resultsHTML += '</ul>';
-                document.getElementById('scan-results-details').innerHTML = resultsHTML;
-            }, 3500);
-        }
-        
-        function saveScanResults() {
-            alert('Hasil scan berhasil disimpan ke proyek Anda');
-            closeModal('smart-scan-modal');
-        }
-        
-        // Saved Projects functions
-        function createNewProject() {
-            alert('Fitur buat proyek baru akan segera tersedia!');
-        }
-        
-        // User profile menu
-        function toggleUserMenu() {
-            alert('Menu user profile akan ditampilkan di sini');
-        }
-        
-        // Animate progress bar on page load
-        window.onload = function() {
-            const progress = document.querySelector('.progress');
-            progress.style.width = '58%';
+    }
+
+    function saveHistory(prompt) {
+      let history = JSON.parse(localStorage.getItem('imePromptHistory')) || [];
+      if (!history.includes(prompt)) {
+        history.unshift(prompt);
+        if (history.length > 10) history.pop();
+        localStorage.setItem('imePromptHistory', JSON.stringify(history));
+        renderHistory();
+      }
+    }
+
+    function renderHistory() {
+      historyEl.innerHTML = '';
+      let history = JSON.parse(localStorage.getItem('imePromptHistory')) || [];
+      history.forEach(prompt => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.textContent = prompt;
+        div.onclick = () => {
+          promptInput.value = prompt;
+          generateImage();
         };
-    </script>
+        historyEl.appendChild(div);
+      });
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('imeDarkMode', document.body.classList.contains('dark'));
+    }
+
+    if (localStorage.getItem('imeDarkMode') === 'true') {
+      document.body.classList.add('dark');
+    }
+
+    renderHistory();
+  </script>
 </body>
 </html>
