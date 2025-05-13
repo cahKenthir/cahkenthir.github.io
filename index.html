@@ -1,336 +1,459 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>IME AI STUDIO</title>
-  <style>
-    :root {
-      --primary: #5f5df4;
-      --bg-light: #f0f4f8;
-      --bg-dark: #121212;
-      --text-light: #fff;
-      --text-dark: #111;
-      --card-bg: #ffffff;
-      --transition: 0.3s ease-in-out;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IME AI STUDIO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --text-color: #2d3436;
+            --bg-color: #f5f6fa;
+            --card-color: #ffffff;
+            --border-color: #dfe6e9;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
 
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: var(--bg-light);
-      color: var(--text-dark);
-      transition: var(--transition);
-    }
+        .dark-mode {
+            --primary-color: #a29bfe;
+            --secondary-color: #6c5ce7;
+            --text-color: #f5f6fa;
+            --bg-color: #2d3436;
+            --card-color: #1e272e;
+            --border-color: #636e72;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
 
-    body.dark {
-      background-color: var(--bg-dark);
-      color: var(--text-light);
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    header {
-      background: var(--primary);
-      color: white;
-      padding: 1rem;
-      text-align: center;
-      border-bottom-left-radius: 20px;
-      border-bottom-right-radius: 20px;
-    }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+            line-height: 1.6;
+        }
 
-    .menu {
-      display: flex;
-      justify-content: space-around;
-      padding: 1rem;
-      background: #fff;
-      border-radius: 15px;
-      margin: 1rem auto;
-      max-width: 960px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
+        header {
+            background-color: var(--card-color);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .menu button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
 
-    .menu button:hover {
-      background: #3e3ccc;
-    }
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
 
-    .container {
-      max-width: 960px;
-      margin: auto;
-      padding: 1rem;
-    }
+        nav ul li {
+            margin-left: 1.5rem;
+        }
 
-    textarea, select, button {
-      width: 100%;
-      margin-bottom: 1rem;
-      padding: 0.7rem;
-      font-size: 1rem;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-    }
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1rem;
-    }
+        nav ul li a:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
 
-    .image-card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      position: relative;
-    }
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
 
-    .image-card img {
-      width: 100%;
-      display: block;
-    }
+        .theme-toggle:hover {
+            background-color: var(--border-color);
+        }
 
-    .image-card .actions {
-      position: absolute;
-      bottom: 8px;
-      right: 8px;
-      display: flex;
-      gap: 6px;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
 
-    .image-card .actions button {
-      background: rgba(255,255,255,0.8);
-      border: none;
-      padding: 5px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
 
-    .loader {
-      margin: 1rem auto;
-      border: 4px solid #eee;
-      border-top: 4px solid var(--primary);
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-    }
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
 
-    @keyframes spin {
-      100% { transform: rotate(360deg); }
-    }
+        .hero p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
 
-    .toggle {
-      text-align: center;
-      margin-top: 1rem;
-    }
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
 
-    .toggle button {
-      background: var(--primary);
-      color: white;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-    }
+        .tab {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+        }
 
-    .history-item {
-      padding: 0.5rem;
-      background: #f7f7f7;
-      margin: 0.3rem 0;
-      border-radius: 8px;
-      cursor: pointer;
-    }
+        .tab.active {
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color);
+        }
 
-    .error {
-      color: red;
-      margin-bottom: 1rem;
-    }
+        .tab:hover:not(.active) {
+            background-color: var(--border-color);
+        }
 
-    footer {
-      text-align: center;
-      padding: 2rem 1rem;
-      font-size: 0.9rem;
-      color: gray;
-    }
-  </style>
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .generator-form {
+            background-color: var(--card-color);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .btn-secondary {
+            background-color: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #b2bec3;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(108, 92, 231, 0.2);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .card-btn {
+            padding: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .card-btn:hover {
+            color: var(--secondary-color);
+        }
+
+        .history-container {
+            background-color: var(--card-color);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .history-item:hover {
+            background-color: var(--border-color);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-prompt {
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .history-date {
+            font-size: 0.8rem;
+            color: var(--secondary-color);
+        }
+
+        .clear-history {
+            text-align: right;
+            margin-top: 0.5rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert-danger {
+            background-color: #ff7675;
+            color: white;
+        }
+
+        .alert-success {
+            background-color: #55efc4;
+            color: #2d3436;
+        }
+
+        footer {
+            background-color: var(--card-color);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-links {
+            margin: 1rem 0;
+        }
+
+        .social-links a {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            margin: 0 0.5rem;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .logo {
+                margin-bottom: 1rem;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 0.5rem;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .form-col {
+                margin-bottom: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>IME AI STUDIO</h1>
-    <p>Powered by OpenAI, FLUX, Stable Diffusion</p>
-  </header>
+    <header>
+        <div class="logo">IME AI STUDIO</div>
+        <nav>
+            <ul>
+                <li><a href="#" class="active" data-tab="home">Home</a></li>
+                <li><a href="#" data-tab="image-generator">Generator Gambar AI</a></li>
+                <li><a href="#" data-tab="image-to-prompt">Image to Prompt</a></li>
+                <li><a href="#" data-tab="consultation">Konsultasi Rumah Tangga</a></li>
+                <li><a href="#" data-tab="profile">Profile</a></li>
+                <li><a href="#" data-tab="contact">Contact</a></li>
+            </ul>
+        </nav>
+        <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon"></i>
+        </button>
+    </header>
 
-  <div class="menu">
-    <button onclick="switchMode('generator')">🎨 Generator Gambar AI</button>
-    <button onclick="switchMode('prompt')">🖼️ Image to Prompt</button>
-    <button onclick="switchMode('boot')">🤖 Konsultasi Masalah AI</button>
-  </div>
-
-  <div class="container">
-    <div id="controls">
-      <textarea id="prompt" rows="3" placeholder="Tulis prompt gambar di sini..."></textarea>
-      <select id="model">
-        <option value="Stable Diffusion">Stable Diffusion</option>
-        <option value="DALL-E">DALL-E</option>
-        <option value="FLUX">FLUX</option>
-      </select>
-      <select id="style">
-        <option value="realistic">Realistic</option>
-        <option value="anime">Anime</option>
-        <option value="painting">Painting</option>
-      </select>
-      <select id="ratio">
-        <option value="1:1">1:1</option>
-        <option value="9:16">9:16</option>
-        <option value="16:9">16:9</option>
-      </select>
-      <button onclick="generateImage()">🚀 Generate</button>
-      <div id="loader" class="loader" style="display: none;"></div>
-      <div id="error" class="error"></div>
-    </div>
-
-    <div id="imageGrid" class="grid"></div>
-
-    <h3>Riwayat Prompt</h3>
-    <div id="history"></div>
-
-    <div class="toggle">
-      <button onclick="toggleDarkMode()">🌗 Dark/Light Mode</button>
-    </div>
-  </div>
-
-  <footer>
-    &copy; 2025 IME AI STUDIO — Dibuat dengan ❤️ dan AI
-  </footer>
-
-  <script>
-    const loader = document.getElementById('loader');
-    const grid = document.getElementById('imageGrid');
-    const errorDiv = document.getElementById('error');
-    const promptInput = document.getElementById('prompt');
-    const historyEl = document.getElementById('history');
-
-    function switchMode(mode) {
-      alert('Mode "' + mode + '" belum tersedia. Fokus pada Generator Gambar AI untuk sekarang.');
-    }
-
-    function getSize(ratio) {
-      switch(ratio) {
-        case '1:1': return [512, 512];
-        case '9:16': return [512, 912];
-        case '16:9': return [912, 512];
-        default: return [512, 512];
-      }
-    }
-
-    function generateImage() {
-      const prompt = promptInput.value.trim();
-      const model = document.getElementById('model').value;
-      const style = document.getElementById('style').value;
-      const ratio = document.getElementById('ratio').value;
-
-      if (!prompt) {
-        alert("Prompt tidak boleh kosong!");
-        return;
-      }
-
-      const styledPrompt = `${prompt}, ${style} style, by ${model}`;
-      const [width, height] = getSize(ratio);
-      const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(styledPrompt)}?width=${width}&height=${height}&steps=50`;
-
-      loader.style.display = 'block';
-      errorDiv.textContent = '';
-
-      fetch(url)
-        .then(res => {
-          if (!res.ok) throw new Error('Gagal menghasilkan gambar.');
-          return res.blob();
-        })
-        .then(blob => {
-          const imageURL = URL.createObjectURL(blob);
-          const card = document.createElement('div');
-          card.className = 'image-card';
-
-          const img = document.createElement('img');
-          img.src = imageURL;
-
-          const actions = document.createElement('div');
-          actions.className = 'actions';
-
-          const downloadBtn = document.createElement('button');
-          downloadBtn.textContent = '⬇️';
-          downloadBtn.onclick = () => {
-            const a = document.createElement('a');
-            a.href = imageURL;
-            a.download = 'ime-ai-image.png';
-            a.click();
-          };
-
-          const shareBtn = document.createElement('button');
-          shareBtn.textContent = '🔗';
-          shareBtn.onclick = () => {
-            window.open(`https://twitter.com/intent/tweet?text=Generated+Image:+${encodeURIComponent(prompt)}`, '_blank');
-          };
-
-          actions.appendChild(downloadBtn);
-          actions.appendChild(shareBtn);
-          card.appendChild(img);
-          card.appendChild(actions);
-          grid.prepend(card);
-
-          saveHistory(prompt);
-        })
-        .catch(err => {
-          errorDiv.textContent = err.message;
-        })
-        .finally(() => {
-          loader.style.display = 'none';
-        });
-    }
-
-    function saveHistory(prompt) {
-      let history = JSON.parse(localStorage.getItem('imePromptHistory')) || [];
-      if (!history.includes(prompt)) {
-        history.unshift(prompt);
-        if (history.length > 10) history.pop();
-        localStorage.setItem('imePromptHistory', JSON.stringify(history));
-        renderHistory();
-      }
-    }
-
-    function renderHistory() {
-      historyEl.innerHTML = '';
-      let history = JSON.parse(localStorage.getItem('imePromptHistory')) || [];
-      history.forEach(prompt => {
-        const div = document.createElement('div');
-        div.className = 'history-item';
-        div.textContent = prompt;
-        div.onclick = () => {
-          promptInput.value = prompt;
-          generateImage();
-        };
-        historyEl.appendChild(div);
-      });
-    }
-
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark');
-      localStorage.setItem('imeDarkMode', document.body.classList.contains('dark'));
-    }
-
-    if (localStorage.getItem('imeDarkMode') === 'true') {
-      document.body.classList.add('dark');
-    }
-
-    renderHistory();
-  </script>
-</body>
-</html>
+    <div class="container">
+        <!-- Home Tab -->
+        <div class="tab-content active" id="
