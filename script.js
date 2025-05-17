@@ -1,298 +1,331 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // ==================== Inisialisasi Elemen ====================
-    // Sections
-    const sections = {
-        chat: document.getElementById('chatBotSection'),
-        image: document.getElementById('imageGenSection'),
-        fbGroup: document.getElementById('fbGroupSection')
-    };
-    
-    // Buttons
-    const navButtons = {
-        chat: document.getElementById('chatBotBtn'),
-        image: document.getElementById('imageGenBtn'),
-        fbGroup: document.getElementById('fbGroupBtn')
-    };
-    
-    // Dark Mode Toggle
-    const darkModeToggle = document.createElement('button');
-    darkModeToggle.id = 'darkModeToggle';
-    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Mode Gelap';
-    document.querySelector('header').appendChild(darkModeToggle);
-    
-    // ==================== Fungsi Bantuan ====================
-    function setActiveSection(sectionKey) {
-        // Sembunyikan semua section
-        Object.values(sections).forEach(section => {
-            section.classList.remove('active');
-        });
-        
-        // Tampilkan section yang dipilih
-        sections[sectionKey].classList.add('active');
-        
-        // Simpan section aktif terakhir ke localStorage
-        localStorage.setItem('lastActiveSection', sectionKey);
-    }
-    
-    function initializeDarkMode() {
-        const darkModeEnabled = localStorage.getItem('darkMode') === 'true';
-        if (darkModeEnabled) {
-            document.body.classList.add('dark-mode');
-            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Mode Terang';
+    // ==================== KONFIGURASI ====================
+    const config = {
+        groq: {
+            endpoint: "/api/groq-proxy", // Gunakan proxy backend untuk keamanan
+            model: "llama3-70b-8192",
+            temperature: 0.7,
+            maxTokens: 1024
+        },
+        ui: {
+            typingDelay: 100, // Delay animasi mengetik (ms)
+            maxHistory: 20 // Jumlah maksimal pesan yang disimpan
         }
-    }
-    
-    // ==================== Event Listeners ====================
-    // Navigasi
-    navButtons.chat.addEventListener('click', () => setActiveSection('chat'));
-    navButtons.image.addEventListener('click', () => setActiveSection('image'));
-    navButtons.fbGroup.addEventListener('click', () => setActiveSection('fbGroup'));
-    
-    // Dark Mode Toggle
-    darkModeToggle.addEventListener('click', function() {
-        document.body.classList.toggle('dark-mode');
-        const isDarkMode = document.body.classList.contains('dark-mode');
-        
-        if (isDarkMode) {
-            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Mode Terang';
-            localStorage.setItem('darkMode', 'true');
-        } else {
-            darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Mode Gelap';
-            localStorage.setItem('darkMode', 'false');
-        }
-    });
-    
-    // ==================== Fitur Chat Bot ====================
+    };
+
+    // ==================== INISIALISASI ELEMEN UI ====================
     const chatDisplay = document.getElementById('chatDisplay');
     const userInput = document.getElementById('userInput');
     const sendBtn = document.getElementById('sendBtn');
-    
-    const botPersonality = {
-        name: "MetaAI",
-        avatar: "🤖",
-        greetings: [
-            "Halo! Saya MetaAI, ada yang bisa saya bantu?",
-            "Hai! Saya di sini untuk membantu Anda.",
-            "Selamat datang! Silakan bertanya apa saja."
-        ],
-        responses: {
-            help: "Saya bisa membantu dengan berbagai topik. Coba tanyakan tentang teknologi, sains, atau berita terbaru.",
-            about: "Saya adalah asisten AI canggih berbasis teknologi terbaru dari Meta.",
-            creator: "Saya dikembangkan oleh tim pengembang menggunakan teknologi mutakhir.",
-            joke: "Mengapa komputer tidak bisa dingin? Karena dia selalu punya Windows! 😄",
-            thanks: "Sama-sama! Senang bisa membantu Anda.",
-            default: "Maaf, saya tidak sepenuhnya memahami. Bisakah Anda menjelaskan dengan cara lain?"
-        },
-        farewells: [
-            "Sampai jumpa lagi!",
-            "Senang berbicara dengan Anda!",
-            "Jika ada pertanyaan lagi, saya siap membantu."
-        ]
+    const clearBtn = document.getElementById('clearBtn');
+    const copyBtn = document.getElementById('copyBtn');
+
+    // ==================== STATE MANAGEMENT ====================
+    const state = {
+        chatHistory: [],
+        isProcessing: false,
+        darkMode: localStorage.getItem('darkMode') === 'true' || false
     };
-    
-    function addMessageToChat(message, isUser) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message');
-        messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
-        
-        // Tambahkan avatar untuk pesan bot
-        if (!isUser) {
-            const avatarSpan = document.createElement('span');
-            avatarSpan.classList.add('avatar');
-            avatarSpan.textContent = botPersonality.avatar;
-            messageDiv.appendChild(avatarSpan);
-        }
-        
-        const textSpan = document.createElement('span');
-        textSpan.textContent = message;
-        messageDiv.appendChild(textSpan);
-        
-        chatDisplay.appendChild(messageDiv);
-        chatDisplay.scrollTop = chatDisplay.scrollHeight;
-    }
-    
-    async function getBotResponse(userMessage) {
-        const lowerMsg = userMessage.toLowerCase();
-        
-        // Tanggapan berdasarkan kata kunci
-        if (lowerMsg.includes('help') || lowerMsg.includes('bantuan')) {
-            return botPersonality.responses.help;
-        } else if (lowerMsg.includes('about') || lowerMsg.includes('tentang')) {
-            return botPersonality.responses.about;
-        } else if (lowerMsg.includes('creator') || lowerMsg.includes('pembuat')) {
-            return botPersonality.responses.creator;
-        } else if (lowerMsg.includes('joke') || lowerMsg.includes('lucu')) {
-            return botPersonality.responses.joke;
-        } else if (lowerMsg.includes('thanks') || lowerMsg.includes('terima kasih')) {
-            return botPersonality.responses.thanks;
-        } else if (lowerMsg.includes('hello') || lowerMsg.includes('hai') || lowerMsg.includes('halo')) {
-            return botPersonality.greetings[Math.floor(Math.random() * botPersonality.greetings.length)];
-        } else if (lowerMsg.includes('bye') || lowerMsg.includes('selamat tinggal')) {
-            return botPersonality.farewells[Math.floor(Math.random() * botPersonality.farewells.length)];
-        } else {
-            // Simulasi permintaan ke API untuk pertanyaan kompleks
-            return await simulateAIRequest(userMessage);
-        }
-    }
-    
-    async function simulateAIRequest(message) {
-        // Ini adalah simulasi - dalam implementasi nyata, ini akan memanggil API AI
-        const mockKnowledgeBase = {
-            "apa itu ai": "AI (Artificial Intelligence) adalah kecerdasan buatan yang ditunjukkan oleh mesin.",
-            "bagaimana cara kerja ai": "AI bekerja dengan memproses data, mengenali pola, dan membuat keputusan berdasarkan algoritma pembelajaran mesin.",
-            "apa keuntungan ai": "AI dapat membantu otomatisasi tugas, analisis data besar, diagnosis medis, kendaraan otonom, dan banyak lagi.",
-            "apa itu meta ai": "Meta AI adalah divisi penelitian kecerdasan buatan dari perusahaan Meta (Facebook) yang mengembangkan teknologi AI terdepan.",
-            "contoh penerapan ai": "Contoh penerapan AI: asisten virtual, rekomendasi produk, deteksi penipuan, terjemahan bahasa, dan pengenalan gambar."
-        };
-        
-        // Simulasi delay jaringan
-        await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1000));
-        
-        // Cari jawaban yang paling cocok
-        const question = message.toLowerCase();
-        for (const [key, value] of Object.entries(mockKnowledgeBase)) {
-            if (question.includes(key)) {
-                return value;
+
+    // ==================== FUNGSI UTILITAS ====================
+    const utils = {
+        // Animasi mengetik
+        typeWriter: async function(element, text, speed = 10) {
+            return new Promise(resolve => {
+                let i = 0;
+                element.textContent = '';
+                const typingInterval = setInterval(() => {
+                    if (i < text.length) {
+                        element.textContent += text.charAt(i);
+                        i++;
+                        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+                    } else {
+                        clearInterval(typingInterval);
+                        resolve();
+                    }
+                }, speed);
+            });
+        },
+
+        // Format waktu
+        formatTime: () => {
+            const now = new Date();
+            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        },
+
+        // Simpan riwayat ke localStorage
+        saveHistory: () => {
+            if (state.chatHistory.length > 0) {
+                localStorage.setItem('chatHistory', JSON.stringify(state.chatHistory));
+            }
+        },
+
+        // Load riwayat dari localStorage
+        loadHistory: () => {
+            const savedHistory = localStorage.getItem('chatHistory');
+            if (savedHistory) {
+                state.chatHistory = JSON.parse(savedHistory);
+                state.chatHistory.forEach(msg => {
+                    if (msg.role === 'assistant') {
+                        ui.addMessage(msg.content, false, msg.timestamp, false);
+                    } else {
+                        ui.addMessage(msg.content, true, msg.timestamp, false);
+                    }
+                });
             }
         }
+    };
+
+    // ==================== FUNGSI UI ====================
+    const ui = {
+        // Tambahkan pesan ke chat
+        addMessage: async (content, isUser, timestamp = utils.formatTime(), animate = true) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', isUser ? 'user-message' : 'bot-message');
+            
+            const headerDiv = document.createElement('div');
+            headerDiv.classList.add('message-header');
+            
+            const avatarSpan = document.createElement('span');
+            avatarSpan.classList.add('avatar');
+            avatarSpan.textContent = isUser ? '👤' : '🤖';
+            
+            const nameSpan = document.createElement('span');
+            nameSpan.classList.add('sender-name');
+            nameSpan.textContent = isUser ? 'Anda' : 'Groq AI';
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.classList.add('message-time');
+            timeSpan.textContent = timestamp;
+            
+            headerDiv.appendChild(avatarSpan);
+            headerDiv.appendChild(nameSpan);
+            headerDiv.appendChild(timeSpan);
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('message-content');
+            
+            if (animate && !isUser) {
+                await utils.typeWriter(contentDiv, content);
+            } else {
+                contentDiv.textContent = content;
+            }
+            
+            messageDiv.appendChild(headerDiv);
+            messageDiv.appendChild(contentDiv);
+            chatDisplay.appendChild(messageDiv);
+            chatDisplay.scrollTop = chatDisplay.scrollHeight;
+            
+            // Simpan ke history
+            if (content.trim() !== '') {
+                state.chatHistory.push({
+                    role: isUser ? 'user' : 'assistant',
+                    content: content,
+                    timestamp: timestamp
+                });
+                
+                // Pertahankan batas maksimal history
+                if (state.chatHistory.length > config.ui.maxHistory) {
+                    state.chatHistory.shift();
+                }
+                
+                utils.saveHistory();
+            }
+        },
+
+        // Tampilkan indikator mengetik
+        showTypingIndicator: () => {
+            if (document.getElementById('typingIndicator')) return;
+            
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typingIndicator';
+            typingDiv.classList.add('message', 'bot-message');
+            
+            const headerDiv = document.createElement('div');
+            headerDiv.classList.add('message-header');
+            
+            const avatarSpan = document.createElement('span');
+            avatarSpan.classList.add('avatar');
+            avatarSpan.textContent = '🤖';
+            
+            const nameSpan = document.createElement('span');
+            nameSpan.classList.add('sender-name');
+            nameSpan.textContent = 'Groq AI';
+            
+            headerDiv.appendChild(avatarSpan);
+            headerDiv.appendChild(nameSpan);
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('message-content');
+            contentDiv.innerHTML = '<div class="typing-animation"><span></span><span></span><span></span></div>';
+            
+            typingDiv.appendChild(headerDiv);
+            typingDiv.appendChild(contentDiv);
+            chatDisplay.appendChild(typingDiv);
+            chatDisplay.scrollTop = chatDisplay.scrollHeight;
+        },
+
+        // Hapus indikator mengetik
+        hideTypingIndicator: () => {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        },
+
+        // Toggle dark mode
+        toggleDarkMode: () => {
+            document.body.classList.toggle('dark-mode');
+            state.darkMode = !state.darkMode;
+            localStorage.setItem('darkMode', state.darkMode);
+            
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            if (state.darkMode) {
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Mode Terang';
+            } else {
+                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Mode Gelap';
+            }
+        },
+
+        // Bersihkan chat
+        clearChat: () => {
+            if (confirm('Apakah Anda yakin ingin menghapus semua riwayat chat?')) {
+                chatDisplay.innerHTML = '';
+                state.chatHistory = [];
+                localStorage.removeItem('chatHistory');
+                ui.addMessage("Halo! Saya Groq AI, ada yang bisa saya bantu?", false, utils.formatTime(), false);
+            }
+        },
+
+        // Salin riwayat chat
+        copyChat: () => {
+            let chatText = '';
+            state.chatHistory.forEach(msg => {
+                const prefix = msg.role === 'user' ? 'Anda: ' : 'AI: ';
+                chatText += `${prefix}${msg.content}\n`;
+            });
+            
+            navigator.clipboard.writeText(chatText.trim())
+                .then(() => alert('Riwayat chat telah disalin!'))
+                .catch(err => console.error('Gagal menyalin:', err));
+        }
+    };
+
+    // ==================== FUNGSI API ====================
+    const api = {
+        // Kirim permintaan ke Groq API
+        sendToGroq: async (messages) => {
+            try {
+                const startTime = performance.now();
+                
+                const response = await fetch(config.groq.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: config.groq.model,
+                        messages: messages,
+                        temperature: config.groq.temperature,
+                        max_tokens: config.groq.maxTokens
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const endTime = performance.now();
+                console.log(`Response time: ${(endTime - startTime).toFixed(0)}ms`);
+                
+                return data.choices[0].message.content.trim();
+            } catch (error) {
+                console.error("API Error:", error);
+                throw error;
+            }
+        }
+    };
+
+    // ==================== EVENT HANDLERS ====================
+    const handleUserMessage = async () => {
+        if (state.isProcessing) return;
         
-        return botPersonality.responses.default;
-    }
-    
+        const message = userInput.value.trim();
+        if (message) {
+            state.isProcessing = true;
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+            
+            // Tampilkan pesan pengguna
+            await ui.addMessage(message, true);
+            userInput.value = '';
+            
+            // Tampilkan indikator mengetik
+            ui.showTypingIndicator();
+            
+            try {
+                // Siapkan konteks percakapan
+                const messages = [
+                    {
+                        role: "system",
+                        content: "Anda adalah asisten AI yang membantu dan ramah. Berikan jawaban yang jelas dalam bahasa Indonesia kecuali diminta bahasa lain. Sertakan emoji yang sesuai untuk membuat respons lebih hidup."
+                    },
+                    ...state.chatHistory.map(msg => ({
+                        role: msg.role,
+                        content: msg.content
+                    }))
+                ];
+                
+                // Dapatkan respons dari API
+                const botResponse = await api.sendToGroq(messages);
+                
+                // Hapus indikator dan tampilkan respons
+                ui.hideTypingIndicator();
+                await ui.addMessage(botResponse, false);
+            } catch (error) {
+                ui.hideTypingIndicator();
+                await ui.addMessage("Maaf, terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi.", false);
+                console.error("Error:", error);
+            } finally {
+                state.isProcessing = false;
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                userInput.focus();
+            }
+        }
+    };
+
+    // ==================== INISIALISASI APLIKASI ====================
+    const init = () => {
+        // Load riwayat chat
+        utils.loadHistory();
+        
+        // Set dark mode
+        if (state.darkMode) {
+            document.body.classList.add('dark-mode');
+            document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-sun"></i> Mode Terang';
+        }
+        
+        // Jika tidak ada riwayat, tampilkan pesan sambutan
+        if (state.chatHistory.length === 0) {
+            ui.addMessage("Halo! Saya Groq AI, ada yang bisa saya bantu?", false, utils.formatTime(), false);
+        }
+    };
+
+    // ==================== EVENT LISTENERS ====================
     sendBtn.addEventListener('click', handleUserMessage);
-    userInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
+    userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
             handleUserMessage();
         }
     });
     
-    async function handleUserMessage() {
-        const message = userInput.value.trim();
-        if (message) {
-            addMessageToChat(message, true);
-            userInput.value = '';
-            
-            // Tampilkan indikator typing
-            const typingIndicator = document.createElement('div');
-            typingIndicator.id = 'typingIndicator';
-            typingIndicator.textContent = `${botPersonality.name} sedang mengetik...`;
-            chatDisplay.appendChild(typingIndicator);
-            chatDisplay.scrollTop = chatDisplay.scrollHeight;
-            
-            try {
-                const botResponse = await getBotResponse(message);
-                document.getElementById('typingIndicator').remove();
-                addMessageToChat(botResponse, false);
-            } catch (error) {
-                document.getElementById('typingIndicator').remove();
-                addMessageToChat("Maaf, terjadi kesalahan saat memproses permintaan Anda.", false);
-                console.error("Error:", error);
-            }
-        }
-    }
-    
-    // ==================== Fitur Generator Gambar ====================
-    const imagePrompt = document.getElementById('imagePrompt');
-    const generateBtn = document.getElementById('generateBtn');
-    const imageResult = document.getElementById('imageResult');
-    const artStyleSelect = document.getElementById('artStyle');
-    const resolutionSelect = document.getElementById('resolution');
-    
-    // Contoh gambar dari berbagai kategori
-    const sampleImages = {
-        realistic: [
-            "https://source.unsplash.com/random/800x600/?realistic,portrait",
-            "https://source.unsplash.com/random/800x600/?landscape,nature",
-            "https://source.unsplash.com/random/800x600/?city,urban"
-        ],
-        cartoon: [
-            "https://source.unsplash.com/random/800x600/?cartoon,drawing",
-            "https://source.unsplash.com/random/800x600/?comic,art",
-            "https://source.unsplash.com/random/800x600/?animation,character"
-        ],
-        anime: [
-            "https://source.unsplash.com/random/800x600/?anime,japanese",
-            "https://source.unsplash.com/random/800x600/?manga,art",
-            "https://source.unsplash.com/random/800x600/?chibi,cute"
-        ],
-        abstract: [
-            "https://source.unsplash.com/random/800x600/?abstract,art",
-            "https://source.unsplash.com/random/800x600/?modern,art",
-            "https://source.unsplash.com/random/800x600/?colorful,painting"
-        ]
-    };
-    
-    generateBtn.addEventListener('click', async function() {
-        const prompt = imagePrompt.value.trim();
-        if (prompt) {
-            // Tampilkan loading
-            imageResult.innerHTML = `
-                <div class="loading-spinner"></div>
-                <p>Membuat gambar "${prompt}" dalam gaya ${artStyleSelect.value}...</p>
-            `;
-            
-            try {
-                // Simulasi delay pembuatan gambar
-                await new Promise(resolve => setTimeout(resolve, 2500));
-                
-                // Dapatkan gambar berdasarkan gaya yang dipilih
-                const selectedStyle = artStyleSelect.value;
-                const images = sampleImages[selectedStyle];
-                const randomImage = images[Math.floor(Math.random() * images.length)];
-                
-                // Tampilkan hasil
-                imageResult.innerHTML = `
-                    <div class="image-result-container">
-                        <h3>Hasil untuk: "${prompt}"</h3>
-                        <p>Gaya: ${selectedStyle.charAt(0).toUpperCase() + selectedStyle.slice(1)}</p>
-                        <img src="${randomImage}" alt="Generated Image">
-                        <div class="image-actions">
-                            <button class="download-btn"><i class="fas fa-download"></i> Unduh</button>
-                            <button class="regenerate-btn"><i class="fas fa-sync-alt"></i> Buat Ulang</button>
-                        </div>
-                        <p class="image-notice">Ini adalah simulasi. Dalam implementasi nyata, gambar akan dihasilkan oleh AI berdasarkan deskripsi Anda.</p>
-                    </div>
-                `;
-                
-                // Tambahkan event listener untuk tombol
-                document.querySelector('.regenerate-btn').addEventListener('click', function() {
-                    generateBtn.click();
-                });
-                
-                document.querySelector('.download-btn').addEventListener('click', function() {
-                    alert('Dalam implementasi nyata, ini akan mengunduh gambar.');
-                });
-                
-            } catch (error) {
-                imageResult.innerHTML = `
-                    <p class="error"><i class="fas fa-exclamation-triangle"></i> Gagal membuat gambar. Silakan coba lagi.</p>
-                `;
-                console.error("Error generating image:", error);
-            }
-        } else {
-            imageResult.innerHTML = `
-                <p class="error"><i class="fas fa-exclamation-circle"></i> Silakan masukkan deskripsi gambar terlebih dahulu.</p>
-            `;
-        }
-    });
-    
-    // ==================== Fitur Facebook Group ====================
-    document.querySelector('.fb-group-link').addEventListener('click', function() {
-        // Simulasi pelacakan analytics
-        console.log('Pengguna mengklik link group Facebook');
-        // Dalam implementasi nyata, bisa menggunakan Google Analytics atau lainnya
-    });
-    
-    // ==================== Inisialisasi Awal ====================
-    // Muat section terakhir yang aktif
-    const lastActiveSection = localStorage.getItem('lastActiveSection') || 'chat';
-    setActiveSection(lastActiveSection);
-    
-    // Inisialisasi dark mode
-    initializeDarkMode();
-    
-    // Sambutan awal dari bot
-    setTimeout(() => {
-        addMessageToChat(botPersonality.greetings[0], false);
-    }, 500);
+    clearBtn.addEventListener('click', ui.clearChat);
+    copyBtn.addEventListener('click', ui.copyChat);
+    document.getElementById('darkModeToggle').addEventListener('click', ui.toggleDarkMode);
+
+    // ==================== JALANKAN APLIKASI ====================
+    init();
 });
