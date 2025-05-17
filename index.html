@@ -404,4 +404,198 @@
     <header>
         <h1><i class="fas fa-robot"></i> IME AI STUDIO</h1>
         <p>Platform Kecerdasan Buatan Multifungsi</p>
-    </header
+    </header>
+    
+    <nav>
+        <ul>
+            <li><button id="chatBotBtn" class="active"><i class="fas fa-comments"></i> Chat AI</button></li>
+            <li><button id="imageGenBtn"><i class="fas fa-image"></i> Generator Gambar</button></li>
+            <li><button id="fbGroupBtn"><i class="fab fa-facebook"></i> Grup Kami</button></li>
+        </ul>
+    </nav>
+    
+    <main>
+        <section id="chatBotSection" class="active">
+            <h2><i class="fas fa-comment-dots"></i> Percakapan dengan AI</h2>
+            <div id="chatContainer">
+                <div id="chatDisplay">
+                    <div class="bot-message message">
+                        Halo! Saya MetaAI, ada yang bisa saya bantu?
+                    </div>
+                </div>
+                <div class="input-area">
+                    <input type="text" id="userInput" placeholder="Ketik pesan Anda...">
+                    <button id="sendBtn"><i class="fas fa-paper-plane"></i> Kirim</button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="imageGenSection">
+            <h2><i class="fas fa-magic"></i> Generator Gambar AI</h2>
+            <div class="image-generator">
+                <textarea id="imagePrompt" placeholder="Contoh: 'Lanskap futuristik dengan kota neon di malam hari, gaya cyberpunk, sangat detail'"></textarea>
+                <div class="settings">
+                    <select id="artStyle">
+                        <option value="realistic">Realistis</option>
+                        <option value="cartoon">Kartun</option>
+                        <option value="anime">Anime</option>
+                        <option value="abstract">Abstrak</option>
+                    </select>
+                    <select id="resolution">
+                        <option value="512x512">512x512</option>
+                        <option value="1024x1024">1024x1024</option>
+                    </select>
+                </div>
+                <button id="generateBtn"><i class="fas fa-cogs"></i> Buat Gambar</button>
+                <div id="imageResult">
+                    <p class="placeholder">Gambar akan muncul di sini setelah Anda mengklik "Buat Gambar"</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="fbGroupSection">
+            <h2><i class="fas fa-users"></i> Komunitas Facebook Kami</h2>
+            <div class="fb-group-container">
+                <p>Bergabunglah dengan komunitas AI terbesar kami di Facebook untuk berdiskusi, berbagi, dan belajar bersama:</p>
+                <a href="https://www.facebook.com/groups/1182261482811767/" target="_blank" class="fb-group-link">
+                    <i class="fab fa-facebook"></i> Buka Grup Facebook
+                </a>
+                <div class="fb-group-stats">
+                    <p><i class="fas fa-user-friends"></i> 10.000+ anggota</p>
+                    <p><i class="fas fa-comments"></i> Diskusi aktif setiap hari</p>
+                    <p><i class="fas fa-lightbulb"></i> Tips & tutorial AI terbaru</p>
+                </div>
+                <div class="fb-group-preview">
+                    <iframe src="https://www.facebook.com/plugins/group.php?href=https%3A%2F%2Fwww.facebook.com%2Fgroups%2F1182261482811767%2F&width=350&show_metadata=true&appId&adapt_container_width=true&height=500" 
+                            width="350" 
+                            height="500" 
+                            style="border:none;overflow:hidden" 
+                            scrolling="no" 
+                            frameborder="0" 
+                            allowfullscreen="true" 
+                            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+                    </iframe>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="social-links">
+            <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+        </div>
+        <p>&copy; 2025 IME AI STUDIO. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Tab switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatBotBtn = document.getElementById('chatBotBtn');
+            const imageGenBtn = document.getElementById('imageGenBtn');
+            const fbGroupBtn = document.getElementById('fbGroupBtn');
+            
+            const chatBotSection = document.getElementById('chatBotSection');
+            const imageGenSection = document.getElementById('imageGenSection');
+            const fbGroupSection = document.getElementById('fbGroupSection');
+            
+            const buttons = [chatBotBtn, imageGenBtn, fbGroupBtn];
+            const sections = [chatBotSection, imageGenSection, fbGroupSection];
+            
+            function switchTab(activeButton, activeSection) {
+                // Remove active class from all buttons and sections
+                buttons.forEach(btn => btn.classList.remove('active'));
+                sections.forEach(section => section.classList.remove('active'));
+                
+                // Add active class to clicked button and corresponding section
+                activeButton.classList.add('active');
+                activeSection.classList.add('active');
+            }
+            
+            chatBotBtn.addEventListener('click', () => switchTab(chatBotBtn, chatBotSection));
+            imageGenBtn.addEventListener('click', () => switchTab(imageGenBtn, imageGenSection));
+            fbGroupBtn.addEventListener('click', () => switchTab(fbGroupBtn, fbGroupSection));
+            
+            // Simple chat functionality
+            const chatDisplay = document.getElementById('chatDisplay');
+            const userInput = document.getElementById('userInput');
+            const sendBtn = document.getElementById('sendBtn');
+            
+            function sendMessage() {
+                const message = userInput.value.trim();
+                if (message === '') return;
+                
+                // Add user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'user-message message';
+                userMessage.textContent = message;
+                chatDisplay.appendChild(userMessage);
+                
+                // Clear input
+                userInput.value = '';
+                
+                // Scroll to bottom
+                chatDisplay.scrollTop = chatDisplay.scrollHeight;
+                
+                // Simulate bot response after a short delay
+                setTimeout(() => {
+                    const botResponses = [
+                        "Saya mengerti apa yang Anda maksud. Ada lagi yang bisa saya bantu?",
+                        "Pertanyaan yang menarik! Saya bisa membantu menjelaskan lebih lanjut.",
+                        "Terima kasih atas pesannya. Bagaimana kabar Anda hari ini?",
+                        "Saya sedang memproses permintaan Anda. Mohon tunggu sebentar...",
+                        "Informasi yang Anda berikan sangat membantu. Ada pertanyaan lain?"
+                    ];
+                    
+                    const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
+                    
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'bot-message message';
+                    botMessage.textContent = randomResponse;
+                    chatDisplay.appendChild(botMessage);
+                    
+                    chatDisplay.scrollTop = chatDisplay.scrollHeight;
+                }, 1000);
+            }
+            
+            sendBtn.addEventListener('click', sendMessage);
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Image generator simulation
+            const generateBtn = document.getElementById('generateBtn');
+            const imageResult = document.getElementById('imageResult');
+            
+            generateBtn.addEventListener('click', function() {
+                const prompt = document.getElementById('imagePrompt').value.trim();
+                if (prompt === '') {
+                    alert('Silakan masukkan deskripsi gambar terlebih dahulu');
+                    return;
+                }
+                
+                imageResult.innerHTML = '<p class="placeholder">Membuat gambar... (simulasi)</p>';
+                
+                // Simulate image generation after a delay
+                setTimeout(() => {
+                    imageResult.innerHTML = `
+                        <div style="text-align: center; padding: 20px;">
+                            <p style="margin-bottom: 15px; color: var(--accent); font-weight: 500;">Hasil untuk: "${prompt}"</p>
+                            <div style="width: 300px; height: 300px; margin: 0 auto; background: linear-gradient(45deg, #4361ee, #3a0ca3, #7209b7); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
+                                Gambar Hasil AI
+                            </div>
+                            <button style="margin-top: 20px; padding: 8px 20px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                <i class="fas fa-download"></i> Unduh Gambar
+                            </button>
+                        </div>
+                    `;
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
