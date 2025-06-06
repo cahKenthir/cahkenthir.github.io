@@ -1,64 +1,97 @@
 from flask import Flask, request, jsonify
 import cv2
 import numpy as np
+import dlib
 import os
 import uuid
 from werkzeug.utils import secure_filename
+from PIL import Image
+import insightface
+from insightface.app import FaceAnalysis
 
 app = Flask(__name__)
 
-# Initialize face detection (using OpenCV as example)
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+# Initialize face analysis
+app_face = FaceAnalysis(name='buffalo_l')
+app_face.prepare(ctx_id=0, det_size=(640, 640))
+
+# Configuration
+UPLOAD_FOLDER = 'face_uploads'
+RESULTS_FOLDER = 'face_results'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(RESULTS_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def swap_faces(source_img, target_img, blend_percent=50, color_match_percent=75):
+    # Detect faces
+    source_faces = app_face.get(source_img)
+    target_faces = app_face.get(target_img)
+    
+    if len(source_faces) == 0 or len(target_faces) == 0:
+        raise ValueError("No faces detected in one or both images")
+    
+    # Get face landmarks
+    source_face = source_faces[0]
+    target_face = target_faces[0]
+    
+    # Swap faces using InsightFace
+    swapper = insightface.model_zoo.get_model('inswapper_128.onnx', download=True)
+    
+    # Convert blend and color match to 0-1 range
+    blend_ratio = blend_percent / 100.0
+    color_match_ratio = color_match_percent / 100.0
+    
+    # Perform face swap
+    result_img = swapper.get(target_img, target_face, source_face, 
+                           paste_back=True, 
+                           blend_ratio=blend_ratio,
+                           color_match_ratio=color_match_ratio)
+    
+    return result_img
 
 @app.route('/swap', methods=['POST'])
-def face_swap():
-    if 'files' not in request.files or len(request.files.getlist('files')) != 2:
-        return jsonify({'error': 'Two files required'}), 400
+def face_swap_api():
+    if 'source' not in request.files or 'target' not in request.files:
+        return jsonify({'error': 'Source and target files required'}), 400
+    
+    source_file = request.files['source']
+    target_file = request.files['target']
+    
+    if source_file.filename == '' or target_file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
     
     # Save uploaded files
-    source_file = request.files.getlist('files')[0]
-    target_file = request.files.getlist('files')[1]
+    source_filename = secure_filename(source_file.filename)
+    target_filename = secure_filename(target_file.filename)
+    source_path = os.path.join(app.config['UPLOAD_FOLDER'], source_filename)
+    target_path = os.path.join(app.config['UPLOAD_FOLDER'], target_filename)
     
-    source_path = f"temp/{secure_filename(source_file.filename)}"
-    target_path = f"temp/{secure_filename(target_file.filename)}"
-    
-    os.makedirs('temp', exist_ok=True)
     source_file.save(source_path)
     target_file.save(target_path)
     
-    # Perform face swap (simplified example)
     try:
-        # Load images
+        # Read images
         source_img = cv2.imread(source_path)
         target_img = cv2.imread(target_path)
         
-        # Detect faces
-        source_faces = face_cascade.detectMultiScale(cv2.cvtColor(source_img, cv2.COLOR_BGR2GRAY), 1.1, 4)
-        target_faces = face_cascade.detectMultiScale(cv2.cvtColor(target_img, cv2.COLOR_BGR2GRAY), 1.1, 4)
+        # Get parameters
+        blend = int(request.form.get('blend', 50))
+        color_match = int(request.form.get('color_match', 75))
         
-        if len(source_faces) == 0 or len(target_faces) == 0:
-            return jsonify({'error': 'No faces detected'}), 400
-        
-        # Simple face swap (in a real app, you'd use more advanced techniques)
-        (x,y,w,h) = source_faces[0]
-        source_face = source_img[y:y+h, x:x+w]
-        
-        (x,y,w,h) = target_faces[0]
-        # Resize source face to target face dimensions
-        resized_face = cv2.resize(source_face, (w, h))
-        target_img[y:y+h, x:x+w] = resized_face
+        # Perform face swap
+        result_img = swap_faces(source_img, target_img, blend, color_match)
         
         # Save result
-        output_path = f"results/{uuid.uuid4()}.jpg"
-        os.makedirs('results', exist_ok=True)
-        cv2.imwrite(output_path, target_img)
+        output_filename = f"swapped_{str(uuid.uuid4())}.jpg"
+        output_path = os.path.join(RESULTS_FOLDER, output_filename)
+        cv2.imwrite(output_path, result_img)
         
         return jsonify({
             'status': 'success',
-            'result_url': f'/results/{output_path}'
+            'result_url': f'/results/{output_filename}'
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(port=5002)
+    app.run(host='0.0.0.0', port=5002)
