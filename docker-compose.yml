@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api-gateway:5000
+
+  api-gateway:
+    build: ./api_gateway
+    ports:
+      - "5000:5000"
+    env_file: .env
+    volumes:
+      - shared_uploads:/app/uploads
+
+  ai-video:
+    build: ./ai_services/video_service
+    ports:
+      - "5001:5001"
+    env_file: .env
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  ai-face:
+    build: ./ai_services/face_service
+    ports:
+      - "5002:5002"
+    env_file: .env
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  ai-image:
+    build: ./ai_services/image_service
+    ports:
+      - "5003:5003"
+    env_file: .env
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - frontend
+      - api-gateway
+
+volumes:
+  shared_uploads:
