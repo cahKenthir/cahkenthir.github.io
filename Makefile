@@ -20,3 +20,10 @@ backup:
 
 clean:
 	docker system prune -a --volumes
+help:
+    @echo "Available targets:"
+    @echo "  build   - Build all containers"
+    @echo "  up      - Start services"
+    @echo "  down    - Stop services"
+    @echo "  logs    - View service logs"
+    @echo "  clean   - Remove unused Docker resources"
