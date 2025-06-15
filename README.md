@@ -1,16 +1,25 @@
+
 # IME AI STUDIO
 
-Advanced AI Video and Image Processing Platform
+Platform AI modern dengan fitur:
+- AI Video Generator (dengan face swap)
+- Editor Gambar
+- Editor Video Pendek
+- Mode terang dan gelap
 
-## Features
-- Text-to-Video Generation
-- AI Face Swapping
-- Image Enhancement
-
-## Installation
-1. Clone repository
-2. Setup environment variables
-3. Run deployment script
+## Instalasi
 
 ```bash
-./scripts/deploy.sh
+npm install
+npm run dev
+```
+
+## Build untuk Deploy
+
+```bash
+npm run build
+```
+
+## Lisensi
+
+MIT
