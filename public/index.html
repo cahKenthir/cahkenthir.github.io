@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IME SIMPATI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Manajemen Penjualan Telkomsel Anda</h1>
+
+        <section id="input-penjualan">
+            <h2>Input Penjualan Baru</h2>
+            <form id="form-penjualan">
+                <label for="produk">Produk:</label>
+                <select id="produk" required>
+                    <option value="">Pilih Produk</option>
+                    <option value="Perdana 5GB">Perdana 5GB</option>
+                    <option value="Voucher 10GB">Voucher 10GB</option>
+                    </select>
+
+                <label for="harga">Harga:</label>
+                <input type="number" id="harga" required>
+
+                <label for="nomor-pelanggan">Nomor Pelanggan:</label>
+                <input type="text" id="nomor-pelanggan" placeholder="08XXXXXXXXXX" required>
+
+                <button type="submit">Catat Penjualan</button>
+            </form>
+        </section>
+
+        <section id="daftar-penjualan">
+            <h2>Daftar Penjualan</h2>
+            <table id="tabel-penjualan">
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Produk</th>
+                        <th>Harga</th>
+                        <th>Nomor Pelanggan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </section>
+
+        <section id="cetak-struk">
+            <h2>Cetak Struk</h2>
+            <button id="btn-cetak-semua">Cetak Semua Struk</button>
+            </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
