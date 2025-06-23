@@ -4,6 +4,12 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     
+    // Validasi client-side
+    if (!email || !password) {
+        alert('Email dan password harus diisi');
+        return;
+    }
+
     try {
         const response = await fetch('server/api/auth.php', {
             method: 'POST',
@@ -15,40 +21,49 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         
         const data = await response.json();
         
-        if(response.ok) {
-            localStorage.setItem('telkomsel_token', data.token);
-            localStorage.setItem('telkomsel_user_email', data.user.email);
-            localStorage.setItem('telkomsel_user_name', data.user.name);
-            
-            document.getElementById('login-view').style.display = 'none';
-            document.getElementById('sales-view').style.display = 'block';
-            
-            // Load initial data
-            loadSalesData();
-        } else {
-            alert(data.error || 'Login failed');
+        if (!response.ok) {
+            throw new Error(data.message || 'Login gagal');
         }
+
+        // Simpan token dan data user
+        localStorage.setItem('telkomsel_token', data.token);
+        localStorage.setItem('telkomsel_user_email', data.user.email);
+        localStorage.setItem('telkomsel_user_name', data.user.name);
+        
+        // Redirect ke dashboard
+        document.getElementById('login-view').style.display = 'none';
+        document.getElementById('sales-view').style.display = 'block';
+        
+        // Load data penjualan
+        loadSalesData();
+        
     } catch (error) {
         console.error('Login error:', error);
-        alert('Terjadi kesalahan saat login');
+        alert(error.message || 'Terjadi kesalahan saat login. Coba lagi.');
     }
 });
 
-document.getElementById('logoutBtn').addEventListener('click', function() {
-    localStorage.removeItem('telkomsel_token');
-    localStorage.removeItem('telkomsel_user_email');
-    localStorage.removeItem('telkomsel_user_name');
-    
-    document.getElementById('login-view').style.display = 'flex';
-    document.getElementById('sales-view').style.display = 'none';
-    
-    // Reset form
-    document.getElementById('loginForm').reset();
-});
-
-// Check if user is already logged in
-if(localStorage.getItem('telkomsel_token')) {
-    document.getElementById('login-view').style.display = 'none';
-    document.getElementById('sales-view').style.display = 'block';
-    loadSalesData();
+// Fungsi untuk validasi token
+function validateToken(token) {
+    try {
+        const payload = JSON.parse(atob(token));
+        return payload.exp > Date.now() / 1000;
+    } catch (e) {
+        return false;
+    }
 }
+
+// Cek status login saat page load
+window.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('telkomsel_token');
+    
+    if (token && validateToken(token)) {
+        document.getElementById('login-view').style.display = 'none';
+        document.getElementById('sales-view').style.display = 'block';
+        loadSalesData();
+    } else {
+        // Clear invalid token
+        localStorage.removeItem('telkomsel_token');
+        document.getElementById('login-view').style.display = 'flex';
+    }
+});
